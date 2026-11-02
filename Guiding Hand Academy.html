@@ -1,0 +1,640 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Guiding Hand Academy</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500;1,6..72,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<style>
+  /* Layout concept: hero is a game-board route climbing bottom-left to top-right through
+     four waypoints (one per exam); the programs section mirrors it as a clickable tab ladder. */
+  :root{
+    --bg:#0C1411; --surface:#142019; --surface-2:#0F1813;
+    --fg:#F3EEE1; --muted:#A9B6AC;
+    --accent:#D9A93B; --accent-ink:#241803; --accent-2:#5BAE8E;
+    --line:rgba(243,238,225,0.14); --line-strong:rgba(243,238,225,0.26);
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 30px rgba(0,0,0,0.4);
+    --font-display:'Newsreader', Georgia, 'Times New Roman', serif;
+    --font-body:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono:'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --bg:#F1ECDD; --surface:#FFFFFF; --surface-2:#E8E1CC;
+      --fg:#211C10; --muted:#645D4C;
+      --accent:#A8761E; --accent-ink:#FFF8E8; --accent-2:#2E7D62;
+      --line:rgba(33,28,16,0.14); --line-strong:rgba(33,28,16,0.26);
+      --shadow: 0 1px 2px rgba(33,28,16,0.07), 0 10px 26px rgba(33,28,16,0.1);
+      color-scheme: light;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#F1ECDD; --surface:#FFFFFF; --surface-2:#E8E1CC;
+    --fg:#211C10; --muted:#645D4C;
+    --accent:#A8761E; --accent-ink:#FFF8E8; --accent-2:#2E7D62;
+    --line:rgba(33,28,16,0.14); --line-strong:rgba(33,28,16,0.26);
+    --shadow: 0 1px 2px rgba(33,28,16,0.07), 0 10px 26px rgba(33,28,16,0.1);
+    color-scheme: light;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0; height:100%;}
+  body{
+    background:var(--bg); color:var(--fg);
+    font-family:var(--font-body); font-size:16px; line-height:1.55;
+    padding-left:max(16px, env(safe-area-inset-left,0px));
+    padding-right:max(16px, env(safe-area-inset-right,0px));
+  }
+  h1,h2,h3{font-family:var(--font-display); text-wrap:balance; margin:0; font-weight:600;}
+  p{margin:0;}
+  a{color:inherit;}
+  .wrap{max-width:1140px; margin:0 auto;}
+  section{padding-block:84px; position:relative;}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--accent-2); font-weight:600; display:inline-flex; align-items:center; gap:9px;
+  }
+  .eyebrow::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--accent);}
+  .rule{height:1px; background:var(--line);}
+
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
+    .reveal.in{opacity:1; transform:translateY(0);}
+  }
+
+  /* ---------- Header ---------- */
+  body::before{
+    content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px);
+    z-index:40; background:var(--bg);
+  }
+  header{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex; align-items:center; justify-content:space-between; padding-block:16px; gap:16px;}
+  .brand{display:flex; align-items:center; gap:10px; text-decoration:none; min-width:0;}
+  .brand svg{flex:none;}
+  .brand-name{font-family:var(--font-display); font-weight:600; font-size:18px; white-space:nowrap; letter-spacing:.01em;}
+  .nav-links{display:flex; align-items:center; gap:30px; list-style:none; margin:0; padding:0;}
+  .nav-links a{text-decoration:none; font-size:14.5px; font-weight:500; color:var(--muted); position:relative;}
+  .nav-links a:hover{color:var(--fg);}
+  .nav-cta{
+    font-family:var(--font-body); font-weight:600; font-size:14px;
+    background:var(--accent); color:var(--accent-ink);
+    border:none; border-radius:999px; padding:10px 20px; text-decoration:none;
+    white-space:nowrap; box-shadow:var(--shadow); cursor:pointer;
+  }
+  .nav-toggle{display:none; background:none; border:1px solid var(--line-strong); border-radius:8px; padding:8px; cursor:pointer; color:var(--fg);}
+  .nav-mobile{display:none; flex-direction:column; gap:2px; list-style:none; margin:0; padding:8px 0 16px; border-top:1px solid var(--line);}
+  .nav-mobile a{display:block; padding:12px 4px; text-decoration:none; color:var(--fg); font-weight:500;}
+
+  /* ---------- Side progress dock ---------- */
+  .dock{
+    position:fixed; right:28px; top:50%; transform:translateY(-50%); z-index:25;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .dock a{
+    width:9px; height:9px; border-radius:50%; background:transparent; border:1.5px solid var(--line-strong);
+    display:block; position:relative;
+  }
+  .dock a span{
+    position:absolute; right:20px; top:50%; transform:translateY(-50%); white-space:nowrap;
+    font-family:var(--font-mono); font-size:11px; color:var(--muted); opacity:0; transition:opacity .2s;
+    background:var(--surface); padding:3px 8px; border-radius:6px; border:1px solid var(--line);
+  }
+  .dock a:hover span{opacity:1;}
+  .dock a.active{background:var(--accent); border-color:var(--accent);}
+  @media (max-width: 1100px){ .dock{display:none;} }
+
+  /* ---------- Hero ---------- */
+  .hero{padding-block:60px 50px;}
+  .hero-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:52px; align-items:center;}
+  .hero h1{font-size:clamp(34px,4.6vw,58px); line-height:1.08; letter-spacing:-.01em; margin-top:18px;}
+  .hero h1 em{font-style:italic; color:var(--accent-2);}
+  .hero-sub{margin-top:20px; max-width:48ch; color:var(--muted); font-size:17.5px;}
+  .hero-ctas{display:flex; gap:12px; margin-top:34px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--font-body); font-weight:600; font-size:15px; text-decoration:none;
+    border-radius:999px; padding:13px 24px; display:inline-flex; align-items:center; gap:8px;
+    cursor:pointer; border:1px solid transparent; transition:transform .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--accent); color:var(--accent-ink); box-shadow:var(--shadow);}
+  .btn-ghost{background:transparent; border-color:var(--line-strong); color:var(--fg);}
+  .hero-strip{display:flex; gap:30px; margin-top:42px; flex-wrap:wrap;}
+  .hero-strip div{font-family:var(--font-mono); font-size:12px; color:var(--muted); letter-spacing:.03em;}
+  .hero-strip strong{display:block; font-family:var(--font-display); font-size:23px; color:var(--fg); font-weight:600;}
+
+  .hero-art{position:relative; max-width:440px; margin-inline:auto; width:100%;}
+  .route-path{stroke-dasharray:6 6; stroke-dashoffset:0;}
+  @media (prefers-reduced-motion: no-preference){
+    .route-path{stroke-dasharray:720; stroke-dashoffset:720; animation:draw 1.8s ease forwards .2s;}
+    @keyframes draw{to{stroke-dashoffset:0;}}
+    .waypoint{opacity:0; animation:pop .4s ease forwards;}
+    .waypoint:nth-of-type(1){animation-delay:.5s;} .waypoint:nth-of-type(2){animation-delay:.9s;}
+    .waypoint:nth-of-type(3){animation-delay:1.3s;} .waypoint:nth-of-type(4){animation-delay:1.7s;}
+    @keyframes pop{from{opacity:0; transform:scale(.4);} to{opacity:1; transform:scale(1);}}
+  }
+
+  /* ---------- Programs (tabbed) ---------- */
+  .section-head{max-width:64ch;}
+  .section-head h2{font-size:clamp(26px,3.2vw,38px); margin-top:14px;}
+  .section-head p{color:var(--muted); margin-top:14px; font-size:16.5px;}
+
+  .tabs{display:flex; gap:10px; margin-top:40px; flex-wrap:wrap;}
+  .tab{
+    font-family:var(--font-mono); font-size:13px; font-weight:600; letter-spacing:.03em;
+    padding:11px 18px; border-radius:999px; border:1px solid var(--line-strong);
+    background:var(--surface); color:var(--muted); cursor:pointer;
+  }
+  .tab.active{background:var(--accent); color:var(--accent-ink); border-color:var(--accent);}
+
+  .panel{
+    margin-top:28px; background:var(--surface); border:1px solid var(--line); border-radius:18px;
+    padding:36px; box-shadow:var(--shadow);
+    display:grid; grid-template-columns:1fr 1fr; gap:36px;
+  }
+  .panel-country{font-family:var(--font-mono); font-size:12px; color:var(--accent-2); letter-spacing:.1em; text-transform:uppercase;}
+  .panel h3{font-size:28px; margin-top:8px;}
+  .panel .desc{color:var(--muted); margin-top:16px; font-size:15.5px; max-width:42ch;}
+  .ladder{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0; min-width:0;}
+  .ladder li{
+    display:flex; gap:14px; align-items:flex-start; padding-block:11px; min-width:0;
+    border-top:1px solid var(--line);
+  }
+  .ladder li:first-child{border-top:none;}
+  .ladder .n{
+    font-family:var(--font-mono); font-size:12px; color:var(--accent-ink); font-weight:700;
+    width:22px; height:22px; border-radius:50%; background:var(--accent); flex:none;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;
+  }
+  .ladder .t{font-size:15px; min-width:0; overflow-wrap:anywhere; padding-top:1px;}
+
+  /* ---------- Why us ---------- */
+  .features{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-top:46px;}
+  .feature{background:var(--surface); padding:30px 26px; min-width:0; transition:background .2s;}
+  .feature:hover{background:var(--surface-2);}
+  .feature .ic{width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:var(--surface-2); margin-bottom:18px; color:var(--accent-2);}
+  .feature h3{font-size:17px; font-weight:600; font-family:var(--font-body);}
+  .feature p{color:var(--muted); font-size:14.5px; margin-top:10px;}
+
+  /* ---------- Process ---------- */
+  .process{display:grid; grid-template-columns:repeat(5,1fr); gap:18px; margin-top:50px;}
+  .pstep{min-width:0; display:flex; flex-direction:column; gap:10px; position:relative; padding-top:28px;}
+  .pstep::before{content:""; position:absolute; top:0; left:0; width:28px; height:1px; background:var(--accent);}
+  .pstep .pn{font-family:var(--font-display); font-size:30px; color:var(--accent-2); font-weight:700;}
+  .pstep h3{font-size:15.5px; font-weight:600; font-family:var(--font-body);}
+  .pstep p{font-size:13.5px; color:var(--muted); margin-top:2px;}
+
+  /* ---------- Contact ---------- */
+  .contact-wrap{display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:46px; align-items:start;}
+  .contact-card{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:34px; box-shadow:var(--shadow);}
+  .field{display:flex; flex-direction:column; gap:6px; margin-bottom:16px;}
+  .field label{font-size:13px; font-weight:600; color:var(--muted);}
+  .field input, .field select, .field textarea{
+    font-family:var(--font-body); font-size:15px; padding:11px 13px; border-radius:9px;
+    border:1px solid var(--line-strong); background:var(--surface-2); color:var(--fg);
+    width:100%;
+  }
+  .field textarea{resize:vertical; min-height:88px;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--accent-2); outline-offset:1px;}
+  .submit-row{display:flex; align-items:center; gap:14px; margin-top:6px; flex-wrap:wrap;}
+  .form-note{font-size:13px; color:var(--muted);}
+  .contact-info{display:flex; flex-direction:column; gap:24px;}
+  .info-row{display:flex; gap:14px; align-items:flex-start;}
+  .info-row .ic{width:36px; height:36px; border-radius:10px; background:var(--surface-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex:none; color:var(--accent-2);}
+  .info-row .label{font-size:12.5px; color:var(--muted); font-family:var(--font-mono); letter-spacing:.04em; text-transform:uppercase;}
+  .copyline{display:flex; align-items:center; gap:8px; margin-top:3px; flex-wrap:wrap;}
+  .copyline span{font-size:15.5px; font-weight:500;}
+  .copy-btn{
+    font-family:var(--font-mono); font-size:11.5px; border:1px solid var(--line-strong); background:transparent;
+    color:var(--muted); border-radius:6px; padding:3px 8px; cursor:pointer;
+  }
+  .copy-btn:hover{color:var(--fg); border-color:var(--fg);}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line); padding-block:36px; margin-top:8px;}
+  .foot-grid{display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap;}
+  .foot-links{display:flex; gap:22px; list-style:none; margin:0; padding:0; flex-wrap:wrap;}
+  .foot-links a{text-decoration:none; color:var(--muted); font-size:14px;}
+  .disclaimer{font-size:12.5px; color:var(--muted); max-width:72ch; margin-top:22px; line-height:1.6;}
+  .copyright{font-size:12.5px; color:var(--muted); margin-top:18px;}
+
+  @media (max-width: 860px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-art{max-width:280px;}
+    .panel{grid-template-columns:1fr;}
+    .features{grid-template-columns:1fr 1fr;}
+    .process{grid-template-columns:1fr 1fr;}
+    .contact-wrap{grid-template-columns:1fr;}
+    .nav-links, .nav-cta{display:none;}
+    .nav-toggle{display:inline-flex;}
+    .nav-mobile.open{display:flex;}
+  }
+  @media (max-width: 480px){
+    .features{grid-template-columns:1fr;}
+    .process{grid-template-columns:1fr;}
+    section{padding-block:58px;}
+    .tabs{gap:8px;}
+    .tab{padding:9px 14px; font-size:12px;}
+  }
+</style>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="22" stroke="var(--accent-2)" stroke-width="2"/>
+        <path d="M24 12 L24 24 L32 30" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="24" cy="24" r="2.6" fill="var(--accent-2)"/>
+      </svg>
+      <span class="brand-name">Guiding Hand Academy</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#programs">Programs</a></li>
+      <li><a href="#why">Why Us</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a class="nav-cta" href="#contact">Book Free Consultation</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <ul class="nav-mobile wrap" id="navMobile">
+    <li><a href="#programs">Programs</a></li>
+    <li><a href="#why">Why Us</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact">Book Free Consultation</a></li>
+  </ul>
+</header>
+
+<nav class="dock" aria-label="Section progress">
+  <a href="#top" data-sec="top"><span>Top</span></a>
+  <a href="#programs" data-sec="programs"><span>Programs</span></a>
+  <a href="#why" data-sec="why"><span>Why Us</span></a>
+  <a href="#process" data-sec="process"><span>Process</span></a>
+  <a href="#contact" data-sec="contact"><span>Contact</span></a>
+</nav>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">AMC &middot; USMLE &middot; PLAB &middot; NEET&nbsp;PG</span>
+        <h1>One guiding hand for every path a medical degree can take you.</h1>
+        <p class="hero-sub">A mentorship-led coaching practice for doctors preparing for the Australian Medical Council exams, USMLE, PLAB and NEET&nbsp;PG — built around a roadmap for <em style="font-style:italic;">your</em> pathway, not a generic syllabus.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#contact">Book a free pathway assessment</a>
+          <a class="btn btn-ghost" href="#programs">Compare the four pathways</a>
+        </div>
+        <div class="hero-strip">
+          <div><strong>4</strong>licensing pathways covered</div>
+          <div><strong>1:1</strong>mentor-led roadmaps</div>
+          <div><strong>MCQ&nbsp;+&nbsp;OSCE</strong>exam-pattern mock drills</div>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 440 400" width="100%" height="100%">
+          <g font-family="IBM Plex Mono" font-size="11" fill="var(--muted)">
+            <text x="60" y="352" text-anchor="middle">YOU</text>
+            <text x="150" y="286" text-anchor="middle">NEET PG</text>
+            <text x="240" y="196" text-anchor="middle">PLAB</text>
+            <text x="320" y="118" text-anchor="middle">USMLE</text>
+            <text x="380" y="40" text-anchor="middle">AMC</text>
+          </g>
+          <path class="route-path" d="M60,330 L150,260 L240,170 L320,92 L380,30" fill="none" stroke="var(--accent-2)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle class="waypoint" cx="60" cy="330" r="6" fill="var(--fg)"/>
+          <circle class="waypoint" cx="150" cy="260" r="6" fill="var(--accent-2)"/>
+          <circle class="waypoint" cx="240" cy="170" r="6" fill="var(--accent-2)"/>
+          <circle class="waypoint" cx="320" cy="92" r="6" fill="var(--accent-2)"/>
+          <g class="waypoint" transform="translate(380,30)">
+            <path d="M0,-14 L0,14 M0,-14 L14,-7 L0,0 Z" fill="var(--accent)" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <section id="programs">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Programs</span>
+        <h2>Four pathways. Pick yours.</h2>
+        <p>Every licensing route has its own exam codes, sequencing and paperwork. Tap a pathway to see its exact ladder of exams.</p>
+      </div>
+
+      <div class="tabs reveal" role="tablist">
+        <button class="tab active" data-exam="amc" role="tab" aria-selected="true">AMC · Australia</button>
+        <button class="tab" data-exam="usmle" role="tab" aria-selected="false">USMLE · USA</button>
+        <button class="tab" data-exam="plab" role="tab" aria-selected="false">PLAB · UK</button>
+        <button class="tab" data-exam="neetpg" role="tab" aria-selected="false">NEET PG · India</button>
+      </div>
+
+      <div class="panel reveal" id="panel">
+        <div>
+          <span class="panel-country" id="panelCountry">Australia</span>
+          <h3 id="panelTitle">AMC Pathway</h3>
+          <p class="desc" id="panelDesc">For IMGs seeking general or specialist registration with the Australian Health Practitioner Regulation Agency (AHPRA) via the Standard Pathway.</p>
+        </div>
+        <ul class="ladder" id="panelSteps"></ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <section id="why">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Why Guiding Hand</span>
+        <h2>Coaching built around your exam, not a textbook.</h2>
+      </div>
+      <div class="features reveal">
+        <div class="feature">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="1.2" opacity=".4"/></svg></div>
+          <h3>Pathway-specific roadmaps</h3>
+          <p>A sequencing plan built around your target country, current exam status, and realistic timeline — not a fixed course calendar.</p>
+        </div>
+        <div class="feature">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+          <h3>Blueprint-mapped question banks</h3>
+          <p>Mock exams patterned on each test's actual structure — AMC CAT MCQ, USMLE CK-style vignettes, PLAB 1 MCQs, PLAB 2 circuits.</p>
+        </div>
+        <div class="feature">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+          <h3>Mentors who've walked the route</h3>
+          <p>One-to-one guidance from doctors who completed the same licensing pathway you're preparing for.</p>
+        </div>
+        <div class="feature">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3>Registration &amp; paperwork support</h3>
+          <p>Help navigating ECFMG, GMC, AHPRA and counselling documentation — the part no question bank prepares you for.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <section id="process">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">How it works</span>
+        <h2>Five steps from first call to registration.</h2>
+      </div>
+      <div class="process reveal">
+        <div class="pstep"><span class="pn">01</span><h3>Pathway assessment</h3><p>A free call to map your degree, timeline and target country against the right exam route.</p></div>
+        <div class="pstep"><span class="pn">02</span><h3>Personalized roadmap</h3><p>Exam order, target dates and study load, built around your work schedule.</p></div>
+        <div class="pstep"><span class="pn">03</span><h3>Structured prep</h3><p>Live sessions, question banks and spaced review mapped to your exam's blueprint.</p></div>
+        <div class="pstep"><span class="pn">04</span><h3>Mock exams</h3><p>Timed MCQ sets and clinical-skill drills with scored feedback before the real sitting.</p></div>
+        <div class="pstep"><span class="pn">05</span><h3>Registration support</h3><p>Guidance through ECFMG, GMC, AHPRA or counselling paperwork once you've cleared the exam.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Get in touch</span>
+        <h2>Start with a free pathway assessment.</h2>
+        <p>Tell us where you are in your journey and which exam you're aiming for — we'll map the route back to you.</p>
+      </div>
+
+      <div class="contact-wrap reveal">
+        <form class="contact-card" id="inquiryForm" action="https://formspree.io/f/guidinghandacademy" method="POST">
+          <input type="hidden" name="_subject" value="New inquiry — Guiding Hand Academy">
+          <div class="field">
+            <label for="f-name">Full name</label>
+            <input id="f-name" name="name" type="text" required autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="f-email">Email</label>
+            <input id="f-email" name="email" type="email" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="f-exam">Target pathway</label>
+            <select id="f-exam" name="exam">
+              <option>AMC — Australia</option>
+              <option>USMLE — United States</option>
+              <option>PLAB — United Kingdom</option>
+              <option>NEET PG — India</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-msg">Where are you in your preparation?</label>
+            <textarea id="f-msg" name="message" placeholder="E.g. finished MBBS in 2024, yet to attempt Step 1…"></textarea>
+          </div>
+          <div class="submit-row">
+            <button type="submit" class="btn btn-primary" id="submitBtn">Request a callback</button>
+            <span class="form-note" id="formStatus">We reply within one business day.</span>
+          </div>
+        </form>
+
+        <div class="contact-info">
+          <div class="info-row">
+            <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 6l9 6 9-6M3 6v12h18V6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+            <div>
+              <span class="label">Email</span>
+              <div class="copyline"><span id="emailText">guidinghandacademy@gmail.com</span><button class="copy-btn" data-copy="guidinghandacademy@gmail.com">Copy</button></div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5c0 8 7 15 15 15l2-5-6-2-2 2c-2-1-4-3-5-5l2-2-2-6-5 1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+            <div>
+              <span class="label">Phone / WhatsApp</span>
+              <div class="copyline"><span id="phoneText">+00 00000 00000</span><button class="copy-btn" data-copy="+00 00000 00000">Copy</button></div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="1.4"/></svg></div>
+            <div>
+              <span class="label">Based in</span>
+              <div class="copyline"><span>Remote-first — mentoring doctors worldwide</span></div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.6 4 6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-6-4-9s1.5-6.4 4-9z" stroke="currentColor" stroke-width="1.4"/></svg></div>
+            <div>
+              <span class="label">Website</span>
+              <div class="copyline"><span>www.guidinghandacademy.com</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <a class="brand" href="#top">
+        <svg width="22" height="22" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke="var(--accent-2)" stroke-width="2"/><path d="M24 12 L24 24 L32 30" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="24" cy="24" r="2.6" fill="var(--accent-2)"/></svg>
+        <span class="brand-name" style="font-size:15px;">Guiding Hand Academy</span>
+      </a>
+      <ul class="foot-links">
+        <li><a href="#programs">Programs</a></li>
+        <li><a href="#why">Why Us</a></li>
+        <li><a href="#process">Process</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <p class="disclaimer">AMC, USMLE, PLAB and NEET&nbsp;PG are examinations administered by their respective bodies — the Australian Medical Council, the ECFMG/NBME, the General Medical Council, and the National Board of Examinations. Guiding Hand Academy is an independent coaching provider and is not affiliated with, endorsed by, or acting on behalf of any of these organizations.</p>
+    <p class="copyright">© 2026 Guiding Hand Academy. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var toggle = document.getElementById('navToggle');
+    var mobile = document.getElementById('navMobile');
+    toggle.addEventListener('click', function(){
+      var open = mobile.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    mobile.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){ mobile.classList.remove('open'); });
+    });
+
+    // --- Programs tab switcher ---
+    var exams = {
+      amc: {
+        country: 'Australia', title: 'AMC Pathway',
+        desc: "For IMGs seeking general or specialist registration with the Australian Health Practitioner Regulation Agency (AHPRA) via the Standard Pathway.",
+        steps: ['AMC CAT MCQ Examination','AMC Clinical Examination','Internship placement','AHPRA general registration']
+      },
+      usmle: {
+        country: 'United States', title: 'USMLE Pathway',
+        desc: "For IMGs pursuing ECFMG certification and a residency match through the National Resident Matching Program (NRMP).",
+        steps: ['Step 1','Step 2 CK','ECFMG certification','ERAS application + NRMP Match','Step 3']
+      },
+      plab: {
+        country: 'United Kingdom', title: 'PLAB Pathway',
+        desc: "For IMGs registering with the General Medical Council (GMC) to practise in the NHS.",
+        steps: ['PLAB 1 — 180 MCQs','PLAB 2 — clinical skills circuit','GMC registration with a licence to practise','NHS post / Foundation-equivalent placement']
+      },
+      neetpg: {
+        country: 'India', title: 'NEET PG Pathway',
+        desc: "For MBBS graduates seeking an MD, MS or Diploma seat through national and state counselling.",
+        steps: ['NEET PG examination','All-India / state counselling rounds','Seat allotment & verification','MD / MS / Diploma admission']
+      }
+    };
+
+    var tabs = document.querySelectorAll('.tab');
+    var panelCountry = document.getElementById('panelCountry');
+    var panelTitle = document.getElementById('panelTitle');
+    var panelDesc = document.getElementById('panelDesc');
+    var panelSteps = document.getElementById('panelSteps');
+    var panel = document.getElementById('panel');
+
+    function renderExam(key){
+      var e = exams[key];
+      panelCountry.textContent = e.country;
+      panelTitle.textContent = e.title;
+      panelDesc.textContent = e.desc;
+      panelSteps.innerHTML = '';
+      e.steps.forEach(function(step, i){
+        var li = document.createElement('li');
+        var n = document.createElement('span'); n.className = 'n'; n.textContent = (i+1);
+        var t = document.createElement('span'); t.className = 't'; t.textContent = step;
+        li.appendChild(n); li.appendChild(t);
+        panelSteps.appendChild(li);
+      });
+    }
+    renderExam('amc');
+
+    tabs.forEach(function(tab){
+      tab.addEventListener('click', function(){
+        tabs.forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+        tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+        panel.style.opacity = 0;
+        setTimeout(function(){ renderExam(tab.dataset.exam); panel.style.opacity = 1; }, 120);
+      });
+    });
+
+    // --- Contact form ---
+    var form = document.getElementById('inquiryForm');
+    var status = document.getElementById('formStatus');
+    var submitBtn = document.getElementById('submitBtn');
+    /* Posts to Formspree, which forwards to guidinghandacademy@gmail.com.
+       Formspree emails a one-time confirmation link the first time this endpoint
+       is used — click it to activate delivery. This request is blocked while the
+       page runs inside a Claude artifact preview; it works once deployed to a real host. */
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      submitBtn.disabled = true;
+      status.textContent = 'Sending…';
+      fetch(form.action, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: new FormData(form)
+      }).then(function(res){
+        if(res.ok){
+          status.textContent = 'Thanks — your request has been sent. We reply within one business day.';
+          form.reset();
+        } else {
+          status.textContent = 'Something went wrong — please email us directly at guidinghandacademy@gmail.com.';
+        }
+      }).catch(function(){
+        status.textContent = 'Something went wrong — please email us directly at guidinghandacademy@gmail.com.';
+      }).finally(function(){
+        submitBtn.disabled = false;
+      });
+    });
+
+    // --- Copy buttons ---
+    document.querySelectorAll('.copy-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var val = btn.getAttribute('data-copy');
+        var original = btn.textContent;
+        function done(){ btn.textContent = 'Copied'; setTimeout(function(){ btn.textContent = original; }, 1500); }
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(val).then(done).catch(function(){
+            var r = document.createRange(); r.selectNodeContents(btn.previousElementSibling);
+            var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+            done();
+          });
+        }
+      });
+    });
+
+    // --- Scroll reveal ---
+    if(window.matchMedia('(prefers-reduced-motion: no-preference)').matches && 'IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){ entry.target.classList.add('in'); io.unobserve(entry.target); }
+        });
+      }, {threshold:.15});
+      document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+    } else {
+      document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+    }
+
+    // --- Side dock active-section highlight ---
+    var dockLinks = document.querySelectorAll('.dock a');
+    var sections = ['top','programs','why','process','contact'].map(function(id){ return document.getElementById(id); }).filter(Boolean);
+    if('IntersectionObserver' in window && dockLinks.length){
+      var sio = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            dockLinks.forEach(function(a){ a.classList.toggle('active', a.dataset.sec === entry.target.id); });
+          }
+        });
+      }, {rootMargin:'-45% 0px -45% 0px'});
+      sections.forEach(function(s){ sio.observe(s); });
+    }
+  })();
+</script>
+
+</body></html>
