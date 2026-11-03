@@ -8,32 +8,14 @@
   /* Layout concept: hero is a game-board route climbing bottom-left to top-right through
      four waypoints (one per exam); the programs section mirrors it as a clickable tab ladder. */
   :root{
-    --bg:#0C1411; --surface:#142019; --surface-2:#0F1813;
-    --fg:#F3EEE1; --muted:#A9B6AC;
-    --accent:#D9A93B; --accent-ink:#241803; --accent-2:#5BAE8E;
-    --line:rgba(243,238,225,0.14); --line-strong:rgba(243,238,225,0.26);
-    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 30px rgba(0,0,0,0.4);
-    --font-display:'Newsreader', Georgia, 'Times New Roman', serif;
-    --font-body:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono:'IBM Plex Mono', 'SF Mono', Consolas, monospace;
-    color-scheme: dark;
-  }
-  @media (prefers-color-scheme: light){
-    :root:not([data-theme="dark"]){
-      --bg:#F1ECDD; --surface:#FFFFFF; --surface-2:#E8E1CC;
-      --fg:#211C10; --muted:#645D4C;
-      --accent:#A8761E; --accent-ink:#FFF8E8; --accent-2:#2E7D62;
-      --line:rgba(33,28,16,0.14); --line-strong:rgba(33,28,16,0.26);
-      --shadow: 0 1px 2px rgba(33,28,16,0.07), 0 10px 26px rgba(33,28,16,0.1);
-      color-scheme: light;
-    }
-  }
-  :root[data-theme="light"]{
     --bg:#F1ECDD; --surface:#FFFFFF; --surface-2:#E8E1CC;
     --fg:#211C10; --muted:#645D4C;
     --accent:#A8761E; --accent-ink:#FFF8E8; --accent-2:#2E7D62;
     --line:rgba(33,28,16,0.14); --line-strong:rgba(33,28,16,0.26);
     --shadow: 0 1px 2px rgba(33,28,16,0.07), 0 10px 26px rgba(33,28,16,0.1);
+    --font-display:'Newsreader', Georgia, 'Times New Roman', serif;
+    --font-body:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono:'IBM Plex Mono', 'SF Mono', Consolas, monospace;
     color-scheme: light;
   }
 
@@ -136,7 +118,8 @@
   .hero-strip div{font-family:var(--font-mono); font-size:12px; color:var(--muted); letter-spacing:.03em;}
   .hero-strip strong{display:block; font-family:var(--font-display); font-size:23px; color:var(--fg); font-weight:600;}
 
-  .hero-art{position:relative; max-width:440px; margin-inline:auto; width:100%;}
+  .hero-art{position:relative; max-width:440px; margin-inline:auto; width:100%; aspect-ratio:440/400;}
+  .hero-art svg{display:block; width:100%; height:100%;}
   .route-path{stroke-dasharray:6 6; stroke-dashoffset:0;}
   @media (prefers-reduced-motion: no-preference){
     .route-path{stroke-dasharray:720; stroke-dashoffset:720; animation:draw 1.8s ease forwards .2s;}
@@ -346,7 +329,7 @@
         </div>
       </div>
       <div class="hero-art" aria-hidden="true">
-        <svg viewBox="0 0 440 400" width="100%" height="100%">
+        <svg viewBox="0 0 440 400">
           <g font-family="IBM Plex Mono" font-size="11" fill="var(--muted)">
             <text x="60" y="352" text-anchor="middle">YOU</text>
             <text x="150" y="286" text-anchor="middle">NEET PG</text>
@@ -557,14 +540,17 @@
 
   <section id="quotes" style="background:var(--surface-2);">
     <div class="wrap">
+      <div class="section-head reveal" style="margin-bottom:8px;">
+        <span class="eyebrow">In Their Words</span>
+      </div>
       <div class="quote-grid reveal">
-        <blockquote class="quote-card">
-          <p>&ldquo;The good physician treats the disease; the great physician treats the patient who has the disease.&rdquo;</p>
-          <cite>&mdash; Sir William Osler</cite>
+        <blockquote class="quote-card" id="quoteCard1">
+          <p id="quoteText1"></p>
+          <cite id="quoteCite1"></cite>
         </blockquote>
-        <blockquote class="quote-card">
-          <p>&ldquo;Wherever the art of medicine is loved, there is also a love of humanity.&rdquo;</p>
-          <cite>&mdash; Hippocrates</cite>
+        <blockquote class="quote-card" id="quoteCard2">
+          <p id="quoteText2"></p>
+          <cite id="quoteCite2"></cite>
         </blockquote>
       </div>
     </div>
@@ -786,6 +772,81 @@
         submitBtn.disabled = false;
       });
     });
+
+    // --- Rotating doctor quotes: random pair on load, reshuffled every 2 minutes ---
+    var doctorQuotes = [
+      {text:"Make a habit of two things: to help, or at least to do no harm.", author:"Hippocrates"},
+      {text:"Wherever the art of medicine is loved, there is also a love of humanity.", author:"Hippocrates"},
+      {text:"Life is short, art long, opportunity fleeting, experience perilous, and decision difficult.", author:"Hippocrates"},
+      {text:"Medicine is a science of uncertainty and an art of probability.", author:"William Osler"},
+      {text:"Listen to your patient, he is telling you the diagnosis.", author:"William Osler"},
+      {text:"To study the phenomena of disease without books is to sail an uncharted sea, while to study books without patients is not to go to sea at all.", author:"William Osler"},
+      {text:"In seeking absolute truth we aim at the unattainable, and must be content with finding broken portions.", author:"William Osler"},
+      {text:"The practice of medicine is an art, not a trade; a calling, not a business.", author:"William Osler"},
+      {text:"The secret of the care of the patient is in caring for the patient.", author:"Francis W. Peabody"},
+      {text:"The best interest of the patient is the only interest to be considered.", author:"William J. Mayo"},
+      {text:"There are two objects of medical education: to heal the sick, and to advance the science.", author:"Charles H. Mayo"},
+      {text:"Medicine is a social science, and politics is nothing but medicine on a larger scale.", author:"Rudolf Virchow"},
+      {text:"Better is possible. It does not take genius. It takes diligence, moral clarity, ingenuity, and a willingness to try.", author:"Atul Gawande"},
+      {text:"Even if I'm dying, until I actually die, I am still living.", author:"Paul Kalanithi"},
+      {text:"The idea that some lives matter less than others is the root of all that's wrong with the world.", author:"Paul Farmer"},
+      {text:"When we are no longer able to change a situation, we are challenged to change ourselves.", author:"Viktor Frankl"},
+      {text:"The reward for work well done is the opportunity to do more.", author:"Jonas Salk"},
+      {text:"Excellence of performance will transcend artificial barriers created by man.", author:"Charles Drew"},
+      {text:"Alas for those that never sing, but die with all their music in them.", author:"Oliver Wendell Holmes Sr."},
+      {text:"Cancer is a flaw in our growth, but this flaw is deeply entrenched in ourselves.", author:"Siddhartha Mukherjee"},
+      {text:"The art of healing comes from nature, not from the physician.", author:"Paracelsus"},
+      {text:"The best physician is also a philosopher.", author:"Galen"},
+      {text:"I prefer a short life with width to a narrow one with length.", author:"Avicenna"},
+      {text:"I have not often seen much dignity in the process by which we die.", author:"Sherwin Nuland"},
+      {text:"The pursuit of excellence has been my objective in life.", author:"Michael DeBakey"},
+      {text:"I dressed his wound; God healed him.", author:"Ambroise Paré"},
+      {text:"Don't think, try; be patient, be accurate.", author:"John Hunter"},
+      {text:"I profess both to learn and to teach anatomy, not from books but from dissections; not from the tenets of philosophers but from the fabric of nature.", author:"William Harvey"},
+      {text:"Learn to get in touch with the silence within yourself, and know that everything in this life has a purpose.", author:"Elisabeth Kübler-Ross"},
+      {text:"The most basic and powerful way to connect to another person is to listen. Just listen.", author:"Rachel Naomi Remen"}
+    ];
+
+    function shuffleArray(arr){
+      var a = arr.slice();
+      for(var i = a.length - 1; i > 0; i--){
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+      }
+      return a;
+    }
+
+    var quoteText1 = document.getElementById('quoteText1');
+    var quoteCite1 = document.getElementById('quoteCite1');
+    var quoteText2 = document.getElementById('quoteText2');
+    var quoteCite2 = document.getElementById('quoteCite2');
+    var quoteCard1 = document.getElementById('quoteCard1');
+    var quoteCard2 = document.getElementById('quoteCard2');
+
+    function renderQuotePair(){
+      var picks = shuffleArray(doctorQuotes).slice(0, 2);
+      if(quoteText1 && picks[0]){
+        quoteText1.textContent = '“' + picks[0].text + '”';
+        quoteCite1.textContent = '— ' + picks[0].author;
+      }
+      if(quoteText2 && picks[1]){
+        quoteText2.textContent = '“' + picks[1].text + '”';
+        quoteCite2.textContent = '— ' + picks[1].author;
+      }
+    }
+
+    if(quoteText1){
+      renderQuotePair();
+      quoteCard1.style.transition = 'opacity .3s ease';
+      quoteCard2.style.transition = 'opacity .3s ease';
+      setInterval(function(){
+        quoteCard1.style.opacity = 0; quoteCard2.style.opacity = 0;
+        setTimeout(function(){
+          renderQuotePair();
+          quoteCard1.style.opacity = 1; quoteCard2.style.opacity = 1;
+        }, 300);
+      }, 120000);
+    }
 
     // --- Copy buttons ---
     document.querySelectorAll('.copy-btn').forEach(function(btn){
